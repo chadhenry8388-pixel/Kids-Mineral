@@ -102,6 +102,10 @@
   @media (min-width:512px){
     .row.dates{flex-direction:row;gap:9px}
   }
+  /* 날짜 칸은 카드 전체를 채우지 않고 내용에 맞는 폭만 씁니다.
+     iOS 날짜 위젯이 필요한 폭(약 170px)보다는 넉넉하고, 화면이 좁으면 알아서 줄어듭니다. */
+  .row.dates input[type=date]{width:100%;max-width:220px}
+  @media (min-width:512px){ .row.dates input[type=date]{max-width:none} }
   .dhint{font-size:11.5px;color:var(--muted);margin-top:7px;font-weight:600;letter-spacing:-.01em}
   .dhint[hidden]{display:none}
   input::placeholder{color:#9C8A76;font-weight:500}
