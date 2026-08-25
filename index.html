@@ -88,23 +88,22 @@
     font-weight:600;transition:border-color .15s,background .15s;
     min-width:0;max-width:100%;
   }
-  /* iOS 사파리 날짜 입력은 기본 위젯 폭이 커서 칸을 밀어냅니다.
-     기본 모양을 끄고 내부 값 정렬을 왼쪽으로 고정해야 폭이 줄어듭니다. */
-  input[type=date]{
-    -webkit-appearance:none;appearance:none;padding-right:10px;
-    display:block;text-align:left;
-  }
-  input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
-  input[type=date]::-webkit-calendar-picker-indicator{margin-left:0;padding-left:2px;opacity:.55}
-  input[type=date]::-webkit-inner-spin-button,
-  input[type=date]::-webkit-clear-button{display:none;-webkit-appearance:none}
+  /* ⚠️ input[type=date] 에 appearance:none 을 주면 iOS 사파리에서
+     비어 있을 때 "연도. 월. 일." 안내 문구가 사라져 빈 칸처럼 보입니다.
+     기본 위젯을 그대로 두고, 폭 문제는 아래 레이아웃으로 해결합니다. */
+  input[type=date]{display:block}
+  input[type=date]::-webkit-date-and-time-value{text-align:left}
+  input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
 
-  /* 좁은 화면에서는 생년월일·측정일을 위아래로 (아이폰 15 이하 폭에서 넘침 방지) */
+  /* 생년월일·측정일은 기본적으로 위아래로 (아이폰 전 기종에서 넘침 방지).
+     레이아웃이 최대폭 480px로 완전히 펼쳐지는 512px 이상에서만 좌우 배치. */
   .row.dates{flex-direction:column;gap:0}
   .row.dates .fld{margin-bottom:15px}
-  @media (min-width:420px){
+  @media (min-width:512px){
     .row.dates{flex-direction:row;gap:9px}
   }
+  .dhint{font-size:11.5px;color:var(--muted);margin-top:7px;font-weight:600;letter-spacing:-.01em}
+  .dhint[hidden]{display:none}
   input::placeholder{color:#9C8A76;font-weight:500}
   input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(242,118,27,.14)}
   .seg{display:flex;background:var(--soft2);border-radius:var(--r3);padding:4px;gap:4px}
@@ -274,7 +273,8 @@
         </div>
       </div>
       <div class="row dates">
-        <div class="fld"><label>생년월일</label><input type="date" id="birth"></div>
+        <div class="fld"><label>생년월일</label><input type="date" id="birth">
+          <div class="dhint" id="birthHint">칸을 누르면 달력이 열려요 · 예) 2016. 10. 15.</div></div>
         <div class="fld"><label>측정일</label><input type="date" id="meas"></div>
       </div>
       <div class="row">
@@ -677,6 +677,11 @@ const INITIAL_RESULT = document.getElementById('result').innerHTML;
   const iso=new Date(t.getTime()-t.getTimezoneOffset()*60000).toISOString().slice(0,10);
   const meas=document.getElementById('meas'), birth=document.getElementById('birth');
   meas.value=iso; meas.max=iso; birth.max=iso;
+  const bHint=document.getElementById('birthHint');
+  const syncHint=()=>{ bHint.hidden = !!birth.value; };
+  birth.addEventListener('input', syncHint);
+  birth.addEventListener('change', syncHint);
+  syncHint();
   document.querySelectorAll('#supCard textarea').forEach(ta=>{
     const cat=ta.dataset.cat;
     ta.value = (store.sup[cat]!=null) ? store.sup[cat] : SUP_DEFAULT[cat];
