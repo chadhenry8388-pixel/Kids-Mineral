@@ -82,33 +82,37 @@
   .row .fld{flex:1;min-width:0}
   .fld{margin-bottom:15px}
   .fld:last-of-type{margin-bottom:0}
-  input[type=number],input[type=date]{
+  input[type=number]{
     width:100%;padding:13px 12px;border:1.5px solid var(--line);border-radius:var(--r3);
     font-size:16px;color:var(--ink);background:var(--soft);outline:none;font-family:inherit;
     font-weight:600;transition:border-color .15s,background .15s;
     min-width:0;max-width:100%;
   }
-  /* ⚠️ input[type=date] 에 appearance:none 을 주면 iOS 사파리에서
-     비어 있을 때 "연도. 월. 일." 안내 문구가 사라져 빈 칸처럼 보입니다.
-     기본 위젯을 그대로 두고, 폭 문제는 아래 레이아웃으로 해결합니다. */
-  input[type=date]{display:block}
-  input[type=date]::-webkit-date-and-time-value{text-align:left}
-  input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
+  /* 날짜는 input[type=date] 대신 년·월·일 선택으로 받습니다.
+     iOS 사파리의 기본 날짜 위젯은 빈 값일 때 아무것도 안 보이고,
+     위젯 고유 폭 때문에 좁은 화면에서 칸을 밀어내는 문제가 있었습니다. */
+  .dgrid{display:flex;gap:7px}
+  .dgrid select{
+    flex:1;min-width:0;width:100%;
+    padding:13px 24px 13px 10px;border:1.5px solid var(--line);border-radius:var(--r3);
+    font-size:15px;font-weight:700;color:var(--ink);background-color:var(--soft);
+    font-family:inherit;outline:none;line-height:1.2;
+    -webkit-appearance:none;appearance:none;
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.6L6 6.4L11 1.6' stroke='%236E5B47' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 9px center;background-size:11px 8px;
+    transition:border-color .15s,background-color .15s;
+  }
+  .dgrid select:focus{border-color:var(--accent);background-color:#fff}
+  .dgrid select:invalid,.dgrid select.ph{color:#9C8A76;font-weight:600}
+  .dgrid select.y{flex:1.25}
 
-  /* 생년월일·측정일은 키·체중과 같은 반칸 폭으로 나란히 둡니다(기존 사이트와 동일).
-     다만 iOS 날짜 위젯은 글자 크기에 비례해 폭을 잡으므로, 반칸(360px 화면 기준 약 143px)
-     안에 확실히 들어오도록 날짜 칸만 글자·여백·달력 아이콘을 줄였습니다. */
-  .row.dates input[type=date]{
-    font-size:15px;padding-left:10px;padding-right:8px;min-width:0;
-  }
-  input[type=date]::-webkit-calendar-picker-indicator{margin:0;padding:0}
-  /* 반칸이 143px 이하로 좁아지는 기기(구형 SE·갤럭시 360px 등)에서만 위아래로 */
-  @media (max-width:374px){
-    .row.dates{flex-direction:column;gap:0}
-    .row.dates .fld{margin-bottom:15px}
-  }
-  .dhint{font-size:11.5px;color:var(--muted);margin:-7px 0 15px;font-weight:600;letter-spacing:-.01em}
-  .dhint[hidden]{display:none}
+  .measline{display:flex;align-items:center;gap:8px;margin:-4px 0 15px;font-size:12.5px;
+    color:var(--sub);font-weight:600}
+  .measline b{color:var(--ink);font-weight:800}
+  .measline button{margin-left:auto;border:1px solid var(--line2);background:#fff;
+    color:var(--accentTxt);font-family:inherit;font-size:11.5px;font-weight:800;
+    padding:6px 11px;border-radius:999px;cursor:pointer}
+  .measline[hidden],#measFld[hidden]{display:none}
   input::placeholder{color:#9C8A76;font-weight:500}
   input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(242,118,27,.14)}
   .seg{display:flex;background:var(--soft2);border-radius:var(--r3);padding:4px;gap:4px}
@@ -277,11 +281,28 @@
           <button type="button" data-sex="girls">👧 여자</button>
         </div>
       </div>
-      <div class="row dates">
-        <div class="fld"><label>생년월일</label><input type="date" id="birth"></div>
-        <div class="fld"><label>측정일</label><input type="date" id="meas"></div>
+      <div class="fld">
+        <label>생년월일</label>
+        <div class="dgrid">
+          <select id="birthY" class="y"></select>
+          <select id="birthM"></select>
+          <select id="birthD"></select>
+        </div>
       </div>
-      <div class="dhint" id="birthHint">생년월일 칸을 누르면 달력이 열려요</div>
+
+      <div class="measline" id="measLine">
+        <span>측정일 · <b id="measLabel">–</b></span>
+        <button type="button" id="measToggle">변경</button>
+      </div>
+      <div class="fld" id="measFld" hidden>
+        <label>측정일</label>
+        <div class="dgrid">
+          <select id="measY" class="y"></select>
+          <select id="measM"></select>
+          <select id="measD"></select>
+        </div>
+      </div>
+
       <div class="row">
         <div class="fld"><label>키 (cm)</label>
           <input type="number" id="height" inputmode="decimal" placeholder="120.5" step="0.1" min="30" max="220"></div>
@@ -677,25 +698,82 @@ document.querySelectorAll('#sexSeg button').forEach(b=>b.onclick=()=>{
 
 /* ---------- 초기화 ---------- */
 const INITIAL_RESULT = document.getElementById('result').innerHTML;
+
+/* ---------- 날짜 선택 (년·월·일) ---------- */
+const D = {
+  bY:document.getElementById('birthY'), bM:document.getElementById('birthM'), bD:document.getElementById('birthD'),
+  mY:document.getElementById('measY'),  mM:document.getElementById('measM'),  mD:document.getElementById('measD')
+};
+function daysIn(y,m){ return new Date(y, m, 0).getDate(); }
+function fillYears(el, from, to){           /* to → from 내림차순 */
+  let h='<option value="">년</option>';
+  for(let v=to; v>=from; v--) h+='<option value="'+v+'">'+v+'</option>';
+  el.innerHTML=h;
+}
+function fillMonths(el){
+  let h='<option value="">월</option>';
+  for(let v=1; v<=12; v++) h+='<option value="'+v+'">'+v+'월</option>';
+  el.innerHTML=h;
+}
+function syncDays(yEl,mEl,dEl){
+  const y=parseInt(yEl.value,10)||2000, m=parseInt(mEl.value,10)||1;
+  const max=daysIn(y,m), cur=parseInt(dEl.value,10);
+  let h='<option value="">일</option>';
+  for(let v=1; v<=max; v++) h+='<option value="'+v+'"'+(v===cur?' selected':'')+'>'+v+'일</option>';
+  dEl.innerHTML=h;
+}
+function markPh(el){ el.classList.toggle('ph', !el.value); }
+function readDate(yEl,mEl,dEl){
+  const y=yEl.value, m=mEl.value, d=dEl.value;
+  if(!y||!m||!d) return '';
+  return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+}
+function fmtDate(str){
+  if(!str) return '–';
+  const [y,m,d]=str.split('-');
+  return y+'. '+parseInt(m,10)+'. '+parseInt(d,10)+'.';
+}
+
 (function(){
   const t=new Date();
-  const iso=new Date(t.getTime()-t.getTimezoneOffset()*60000).toISOString().slice(0,10);
-  const meas=document.getElementById('meas'), birth=document.getElementById('birth');
-  meas.value=iso; meas.max=iso; birth.max=iso;
-  const bHint=document.getElementById('birthHint');
-  const syncHint=()=>{ bHint.hidden = !!birth.value; };
-  birth.addEventListener('input', syncHint);
-  birth.addEventListener('change', syncHint);
-  syncHint();
+  const todayY=t.getFullYear(), todayM=t.getMonth()+1, todayD=t.getDate();
+
+  fillYears(D.bY, todayY-25, todayY);  fillMonths(D.bM);  syncDays(D.bY,D.bM,D.bD);
+  fillYears(D.mY, todayY-25, todayY);  fillMonths(D.mM);
+  D.mY.value=todayY; D.mM.value=todayM; syncDays(D.mY,D.mM,D.mD); D.mD.value=todayD;
+
+  [D.bY,D.bM,D.bD,D.mY,D.mM,D.mD].forEach(markPh);
+
+  function onBirth(){ syncDays(D.bY,D.bM,D.bD); [D.bY,D.bM,D.bD].forEach(markPh); }
+  D.bY.addEventListener('change',onBirth); D.bM.addEventListener('change',onBirth);
+  D.bD.addEventListener('change',()=>markPh(D.bD));
+
+  const measLabel=document.getElementById('measLabel');
+  function onMeas(){
+    syncDays(D.mY,D.mM,D.mD);
+    [D.mY,D.mM,D.mD].forEach(markPh);
+    measLabel.textContent = fmtDate(readDate(D.mY,D.mM,D.mD));
+  }
+  D.mY.addEventListener('change',onMeas); D.mM.addEventListener('change',onMeas);
+  D.mD.addEventListener('change',onMeas);
+  onMeas();
+
+  document.getElementById('measToggle').onclick=function(){
+    const f=document.getElementById('measFld');
+    f.hidden=!f.hidden;
+    this.textContent = f.hidden ? '변경' : '접기';
+  };
+
   document.querySelectorAll('#supCard textarea').forEach(ta=>{
     const cat=ta.dataset.cat;
     ta.value = (store.sup[cat]!=null) ? store.sup[cat] : SUP_DEFAULT[cat];
     ta.addEventListener('input',()=>{
       store.sup[cat]=ta.value; saveStore(store);
-      const s=document.getElementById('savedMsg'); s.classList.add('show');
-      clearTimeout(window.__st); window.__st=setTimeout(()=>s.classList.remove('show'),1200);
+      const sv=document.getElementById('savedMsg'); sv.classList.add('show');
+      clearTimeout(window.__st); window.__st=setTimeout(()=>sv.classList.remove('show'),1200);
     });
   });
+
   document.getElementById('lnkReport').href  = LINKS.report;
   document.getElementById('lnkKakao').href   = LINKS.kakao;
   document.getElementById('lnkBuy').href     = LINKS.buy;
@@ -705,13 +783,12 @@ const INITIAL_RESULT = document.getElementById('result').innerHTML;
   const pn=document.getElementById('promoNote');
   if(PROMO){ pn.textContent=PROMO; } else { pn.style.display='none'; }
 
-  /* 탭 전환 */
-  document.querySelectorAll('#tabs .tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('#tabs .tab').forEach(tb=>tb.onclick=()=>{
     document.querySelectorAll('#tabs .tab').forEach(x=>x.classList.remove('on'));
-    t.classList.add('on');
-    const dh = t.dataset.mode==='dh';
-    document.getElementById('panelDH').hidden = !dh;
-    document.getElementById('panelPH').hidden =  dh;
+    tb.classList.add('on');
+    const isDh = tb.dataset.mode==='dh';
+    document.getElementById('panelDH').hidden = !isDh;
+    document.getElementById('panelPH').hidden =  isDh;
   });
 })();
 
@@ -721,16 +798,18 @@ function clearErr(){document.getElementById('err').classList.remove('on');}
 
 document.getElementById('calcBtn').onclick=function(){
   clearErr();
-  const birth=document.getElementById('birth').value;
-  const meas =document.getElementById('meas').value;
+  const birth=readDate(D.bY,D.bM,D.bD);
+  const meas =readDate(D.mY,D.mM,D.mD);
   const h=parseFloat(document.getElementById('height').value);
   const w=parseFloat(document.getElementById('weight').value);
 
-  if(!birth) return showErr('생년월일을 입력해 주세요.');
-  if(!meas)  return showErr('측정일을 입력해 주세요.');
+  if(!birth) return showErr('생년월일을 년·월·일까지 모두 골라 주세요.');
+  if(!meas)  return showErr('측정일을 년·월·일까지 모두 골라 주세요.');
   if(!(h>=30&&h<=220)) return showErr('키를 30~220cm 사이로 입력해 주세요.');
   if(!(w>=2 &&w<=200)) return showErr('체중을 2~200kg 사이로 입력해 주세요.');
 
+  const today=new Date(); today.setHours(0,0,0,0);
+  if(new Date(meas+'T00:00:00') > today) return showErr('측정일이 미래 날짜예요.');
   const months=ageMonths(birth,meas);
   if(months<0)   return showErr('측정일이 생년월일보다 빨라요.');
   if(months>300) return showErr('만 25세를 넘는 나이는 계산할 수 없어요.');
@@ -889,6 +968,13 @@ window.addEventListener('hashchange',()=>{ if(isAdminUrl()) enterAdmin(); });
     const segs=root.querySelectorAll('#sexSeg button');
     segs.forEach(b=>b.classList.remove('on')); if(segs[0]) segs[0].classList.add('on');
     root.querySelectorAll('input').forEach(i=>i.removeAttribute('value'));
+    /* 실행 중 생성된 년·월·일 옵션을 비워 배포본이 깨끗하게 시작하도록 */
+    ['birthY','birthM','birthD','measY','measM','measD'].forEach(id=>{
+      const el=q('#'+id); if(el){ el.innerHTML=''; el.classList.remove('ph'); }
+    });
+    if(q('#measFld')) q('#measFld').hidden=true;
+    if(q('#measToggle')) q('#measToggle').textContent='변경';
+    if(q('#measLabel')) q('#measLabel').textContent='–';
     if(q('#exportHint')) q('#exportHint').textContent='저장한 HTML을 GitHub에 올리면 방문자에게 이 문구가 보이고, 편집 칸은 숨겨집니다.';
 
     let html='<!DOCTYPE html>\n'+root.outerHTML;
