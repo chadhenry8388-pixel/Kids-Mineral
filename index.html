@@ -205,6 +205,9 @@
   .altnote{font-size:11.5px;color:var(--sub);margin-top:10px;line-height:1.65;
     background:var(--soft);border:1px dashed var(--line2);border-radius:var(--r2);padding:10px 11px}
   .altnote b{color:var(--accentTxt);font-weight:800}
+  /* 형광펜 강조 */
+  .hl{background:linear-gradient(transparent 52%, #FFDFA6 52%);
+      font-weight:800;color:var(--ink);padding:0 2px;border-radius:2px}
   .minlink{display:block;text-align:center;margin-top:11px;font-size:12px;color:var(--sub);
     text-decoration:none;font-weight:700}
   .minlink u{color:var(--accentTxt);text-underline-offset:3px}
@@ -442,7 +445,7 @@
   <footer>
     <span class="brand">Drughacker Medical</span>
     만 2~19세 대상 · 데이터: WHO Child Growth Standards &amp; 2007 Reference
-    <span style="opacity:.65"> · v6</span>
+    <span style="opacity:.65"> · v7</span>
   </footer>
 </div>
 
@@ -495,7 +498,9 @@ function minekiPlan(cat, months){
   if(cat === "저체중"){
     return {mode:"two", qty:"2포",
       desc: base + " · 만 6세 이상 라벨 권장량 2포",
-      alt : "저체중은 미네랄 공백을 빠르게 채우는 것이 목적이라 <b>라벨 권장량대로 2포</b>를 유지합니다. 1박스(30포)가 15일분입니다. "
+      alt : "저체중은 미네랄 공백을 빠르게 채우는 것이 목적이라 <b>라벨 권장량대로 2포</b>를 유지합니다. 1박스(30포)가 15일분입니다.<br><br>"
+          + "<span class=\"hl\">정상 체중 구간으로 올라오면 그때부터는 하루 1포로 줄여도 충분합니다.</span> "
+          + "1포로 바꾸면 하루 1,253원 · 월 37,600원이 되고, 1박스가 그대로 한 달분이 됩니다.<br><br>"
           + "다만 체중을 늘리는 것은 영양제가 아니라 열량·단백질이라는 점을 함께 기억하세요."};
   }
   if(cat === "정상"){
