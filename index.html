@@ -95,18 +95,19 @@
   input[type=date]::-webkit-date-and-time-value{text-align:left}
   input[type=date]::-webkit-calendar-picker-indicator{opacity:.5}
 
-  /* 생년월일·측정일은 기본적으로 위아래로 (아이폰 전 기종에서 넘침 방지).
-     레이아웃이 최대폭 480px로 완전히 펼쳐지는 512px 이상에서만 좌우 배치. */
-  .row.dates{flex-direction:column;gap:0}
-  .row.dates .fld{margin-bottom:15px}
-  @media (min-width:512px){
-    .row.dates{flex-direction:row;gap:9px}
+  /* 생년월일·측정일은 키·체중과 같은 반칸 폭으로 나란히 둡니다(기존 사이트와 동일).
+     다만 iOS 날짜 위젯은 글자 크기에 비례해 폭을 잡으므로, 반칸(360px 화면 기준 약 143px)
+     안에 확실히 들어오도록 날짜 칸만 글자·여백·달력 아이콘을 줄였습니다. */
+  .row.dates input[type=date]{
+    font-size:15px;padding-left:10px;padding-right:8px;min-width:0;
   }
-  /* 날짜 칸은 카드 전체를 채우지 않고 내용에 맞는 폭만 씁니다.
-     iOS 날짜 위젯이 필요한 폭(약 170px)보다는 넉넉하고, 화면이 좁으면 알아서 줄어듭니다. */
-  .row.dates input[type=date]{width:100%;max-width:220px}
-  @media (min-width:512px){ .row.dates input[type=date]{max-width:none} }
-  .dhint{font-size:11.5px;color:var(--muted);margin-top:7px;font-weight:600;letter-spacing:-.01em}
+  input[type=date]::-webkit-calendar-picker-indicator{margin:0;padding:0}
+  /* 반칸이 143px 이하로 좁아지는 기기(구형 SE·갤럭시 360px 등)에서만 위아래로 */
+  @media (max-width:374px){
+    .row.dates{flex-direction:column;gap:0}
+    .row.dates .fld{margin-bottom:15px}
+  }
+  .dhint{font-size:11.5px;color:var(--muted);margin:-7px 0 15px;font-weight:600;letter-spacing:-.01em}
   .dhint[hidden]{display:none}
   input::placeholder{color:#9C8A76;font-weight:500}
   input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(242,118,27,.14)}
@@ -277,10 +278,10 @@
         </div>
       </div>
       <div class="row dates">
-        <div class="fld"><label>생년월일</label><input type="date" id="birth">
-          <div class="dhint" id="birthHint">칸을 누르면 달력이 열려요 · 예) 2016. 10. 15.</div></div>
+        <div class="fld"><label>생년월일</label><input type="date" id="birth"></div>
         <div class="fld"><label>측정일</label><input type="date" id="meas"></div>
       </div>
+      <div class="dhint" id="birthHint">생년월일 칸을 누르면 달력이 열려요</div>
       <div class="row">
         <div class="fld"><label>키 (cm)</label>
           <input type="number" id="height" inputmode="decimal" placeholder="120.5" step="0.1" min="30" max="220"></div>
