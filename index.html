@@ -178,6 +178,7 @@
   .pill .tx b{display:block;font-size:14px;font-weight:800;letter-spacing:-.015em;color:var(--ink)}
   .pill .tx span{display:block;font-size:12px;color:var(--sub);margin-top:3px;line-height:1.6}
   .pill .qty{font-size:12px;font-weight:800;color:var(--accentTxt);white-space:nowrap;padding-top:2px}
+  .pill .tx .pnote{display:block;font-size:12px;margin-top:7px;line-height:1.65;color:var(--ink)}
 
   .costbox{margin-top:12px;background:var(--accentSoft);border:1px solid #F6DCC0;
     border-radius:var(--r2);padding:13px 14px}
@@ -206,8 +207,10 @@
     background:var(--soft);border:1px dashed var(--line2);border-radius:var(--r2);padding:10px 11px}
   .altnote b{color:var(--accentTxt);font-weight:800}
   /* 형광펜 강조 */
-  .hl{background:linear-gradient(transparent 52%, #FFDFA6 52%);
-      font-weight:800;color:var(--ink);padding:0 2px;border-radius:2px}
+  /* 형광펜 강조 — 그라디언트는 줄바꿈 시 첫 줄이 칠해지지 않아 단색으로 처리 */
+  .hl{background:#FFDFA6;font-weight:800;color:var(--ink);
+      padding:2px 4px;border-radius:3px;line-height:1.9;
+      -webkit-box-decoration-break:clone;box-decoration-break:clone}
   .minlink{display:block;text-align:center;margin-top:11px;font-size:12px;color:var(--sub);
     text-decoration:none;font-weight:700}
   .minlink u{color:var(--accentTxt);text-underline-offset:3px}
@@ -445,7 +448,7 @@
   <footer>
     <span class="brand">Drughacker Medical</span>
     만 2~19세 대상 · 데이터: WHO Child Growth Standards &amp; 2007 Reference
-    <span style="opacity:.65"> · v7</span>
+    <span style="opacity:.65"> · v8</span>
   </footer>
 </div>
 
@@ -497,6 +500,7 @@ function minekiPlan(cat, months){
   }
   if(cat === "저체중"){
     return {mode:"two", qty:"2포",
+      note: '<span class="hl">정상 체중으로 올라오면 하루 1포로 줄여도 충분합니다.</span>',
       desc: base + " · 만 6세 이상 라벨 권장량 2포",
       alt : "저체중은 미네랄 공백을 빠르게 채우는 것이 목적이라 <b>라벨 권장량대로 2포</b>를 유지합니다. 1박스(30포)가 15일분입니다.<br><br>"
           + "<span class=\"hl\">정상 체중 구간으로 올라오면 그때부터는 하루 1포로 줄여도 충분합니다.</span> "
@@ -886,13 +890,15 @@ document.getElementById('calcBtn').onclick=function(){
   document.getElementById('recoLead').textContent=info.lead;
 
   const pillHTML = it => '<div class="pill"><div class="ic">'+it.ic+'</div>'+
-      '<div class="tx"><b>'+it.name+'</b><span>'+it.desc+'</span></div>'+
+      '<div class="tx"><b>'+it.name+'</b><span>'+it.desc+'</span>'+
+        (it.note ? '<span class="pnote">'+it.note+'</span>' : '')+
+      '</div>'+
       '<div class="qty">'+it.qty+'</div></div>';
 
   /* ① 드럭해커 추천 — 나이 + 체중 구간에 따라 미네키UP 포수·비용이 바뀝니다 */
   const plan = minekiPlan(cat, months);
   const dh   = dhCost(plan.mode);
-  const mineki = {ic:"🧪", name:"미네키UP — 미네랄 축", qty:plan.qty, desc:plan.desc};
+  const mineki = {ic:"🧪", name:"미네키UP — 미네랄 축", qty:plan.qty, desc:plan.desc, note:plan.note};
   document.getElementById('dhPills').innerHTML = [IMMUNE, mineki].map(pillHTML).join('');
   document.getElementById('dhCostName').textContent = info.costName;
   document.getElementById('dhCostVal').textContent  = dh.short;
