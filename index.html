@@ -408,8 +408,12 @@
         <span class="n">1</span>
         <span class="lab"><b>키즈 영양제 정리본</b><span>인기 Top 키즈영양제 가성비까지 체크</span></span>
         <span class="ar">→</span></a>
-      <a class="btn k" id="lnkKakao" target="_blank" rel="noopener">
+      <a class="btn p" id="lnkMineralGuide" target="_blank" rel="noopener">
         <span class="n">2</span>
+        <span class="lab"><b>키즈미네랄 정리본</b><span>프리미엄 미네랄 5종 분석</span></span>
+        <span class="ar">→</span></a>
+      <a class="btn k" id="lnkKakao" target="_blank" rel="noopener">
+        <span class="n">3</span>
         <span class="lab"><b>드럭해커 카톡 상담</b><span>우리 아이 조합, 5분이면 확인</span></span>
         <span class="ar">→</span></a>
     </div>
@@ -460,8 +464,8 @@
    ======================================================================= */
 const LINKS = {
   report : "https://app.notion.com/p/6-3b30fb04531c816d9c4ed61136d95d96",   // ① 키즈 영양제 정리본 (키즈 멀티비타민 매거진)
-  kakao  : "https://pf.kakao.com/_emBAn/chat",                            // ② 카톡 상담
-  mineral: "https://app.notion.com/p/3c40fb04531c81a0bc24f37bd0dfbada",   // 약국 프리미엄 미네랄 완전분석
+  kakao  : "https://pf.kakao.com/_emBAn/chat",                            // ③ 카톡 상담
+  mineral: "https://app.notion.com/p/3c40fb04531c81a0bc24f37bd0dfbada",   // ② 키즈미네랄 정리본 (약국 프리미엄 미네랄 완전분석)
   buy    : "https://app.notion.com/p/3b40fb04531c80ae881fd65344c19303",   // 구매 링크 모음
   buyMineki : "https://mkt.shopping.naver.com/link/6a3a2e5c8f2a366044c39170",
   buyImmune : "https://smartstore.naver.com/thepiumstore/products/13656529963"   // 만 3세 미만 추천
@@ -814,6 +818,7 @@ function fmtDate(str){
   document.getElementById('lnkReport').href  = LINKS.report;
   document.getElementById('lnkKakao').href   = LINKS.kakao;
   document.getElementById('lnkMineral').href = LINKS.mineral;
+  document.getElementById('lnkMineralGuide').href = LINKS.mineral;
   const bm=document.getElementById('buyMineki');
   if(MINEKI_OPEN){ bm.href = LINKS.buyMineki; }
   else { bm.removeAttribute('href'); bm.classList.add('off'); bm.setAttribute('aria-disabled','true'); }
