@@ -382,8 +382,8 @@
         <div class="altnote" id="dhAlt" hidden></div>
         <div class="warn" id="dhWarn"></div>
         <div class="buys">
-          <a class="buy" id="buyMineki" target="_blank" rel="noopener">🧪 미네키UP 11/5(목) 공구 예정</a>
-          <a class="buy" id="buyKidsday" target="_blank" rel="noopener">🍎 키즈데이 구매</a>
+          <a class="buy" id="buyMineki" target="_blank" rel="noopener">🧪 미네키UP 공동구매 진행중</a>
+          <a class="buy" id="buyVit" target="_blank" rel="noopener">🦖 티라노 약국 구입</a>
         </div>
         <div class="promo" id="promoNote"></div>
       </div>
@@ -396,7 +396,7 @@
             <span class="p" id="phCostVal">–</span></div>
           <div class="costrow bad"><span class="n">드럭해커 추천 조합</span>
             <span class="p" id="phCmpVal">–</span></div>
-          <div class="costnote">약국 제품이라서 더 우수하다는 뜻은 아닙니다. 키즈데이·미네키UP을 제외하고 약국 판매 제품만으로 구성해야 할 때의 대안입니다. 가격은 약국·판매처·시기에 따라 달라집니다.</div>
+          <div class="costnote">약국 제품이라서 더 우수하다는 뜻은 아닙니다. 미네키UP 없이 약국 판매 제품만으로 구성해야 할 때의 대안입니다. 가격은 약국·판매처·시기에 따라 달라집니다.</div>
         </div>
         <div class="warn" id="phWarn"></div>
         <a class="minlink" id="lnkMineral" target="_blank" rel="noopener">약국 프리미엄 미네랄 6종 <u>원료·제형까지 비교 →</u></a>
@@ -464,20 +464,19 @@ const LINKS = {
   mineral: "https://app.notion.com/p/3c40fb04531c81a0bc24f37bd0dfbada",   // 약국 프리미엄 미네랄 완전분석
   buy    : "https://app.notion.com/p/3b40fb04531c80ae881fd65344c19303",   // 구매 링크 모음
   buyMineki : "https://mkt.shopping.naver.com/link/6a3a2e5c8f2a366044c39170",
-  buyKidsday: "https://better-day.kr/product/detail.html?product_no=310",
   buyImmune : "https://smartstore.naver.com/thepiumstore/products/13656529963"   // 만 3세 미만 추천
 };
 
 /* 공동구매 안내 문구 — 기간이 끝나면 빈 문자열("")로 바꾸면 자동으로 숨겨집니다. */
-const PROMO = "키즈데이 30정 19,000원 (정가 54,000원 · 10/12~10/18 공동구매) · 미네키UP은 11월 5일(목) 오전 10시 공동구매 예정입니다.";
+const PROMO = "미네키UP은 공동구매 진행중입니다.";
 
-/* 미네키UP 공구 오픈 전에는 false — 버튼이 눌리지 않습니다. 오픈하면 true로 바꾸고 버튼 문구도 '🧪 미네키UP 구매'로 되돌리세요. */
-const MINEKI_OPEN = false;
+/* 미네키UP 공구 오픈 전에는 false — 버튼이 눌리지 않습니다. 공구가 끝나면 버튼 문구도 '🧪 미네키UP 구매'로 바꾸세요. */
+const MINEKI_OPEN = true;
 
 /* 이뮨츄(만 3세 미만 추천) 공구 오픈 전에는 false — 버튼이 눌리지 않습니다. */
 const IMMUNE_OPEN = false;
 /* 만 3세 미만 화면에 보이는 공동구매 안내 */
-const PROMO_U3 = "이뮨츄는 11월 2일(월) 공동구매 예정 · 미네키UP은 11월 5일(목) 오전 10시 공동구매 예정입니다.";
+const PROMO_U3 = "이뮨츄는 11월 2일(월) 공동구매 예정 · 미네키UP은 공동구매 진행중입니다.";
 
 // ==== GROWTH DATA : START ====
 /* WHO Child Growth Standards & 2007 Reference — 기존 index.html에서 원문 그대로 이식 */
@@ -497,9 +496,12 @@ const AGE6 = 72;   // 만 6세 (개월)
 const AGE8 = 96;   // 만 8세 (개월)
 
 /* 드럭해커 추천 — 비타민 축 + 미네랄 축 */
-const KIDSDAY = {ic:"🍎", name:"키즈데이 — 비타민 축", qty:"1정",
-  desc:"비타민 A·C·D·E·K, B군·B12·엽산까지 하루 1정 · 설탕 대신 자일리톨 · 30정 19,000원(공구가)"};
-/* 만 3세 미만 — 키즈데이는 씹어 먹는 츄어블이라 젤리형 이뮨츄로 대체 */
+function tyrano(over8){
+  return {ic:"🦖", name:"티라노골드플러스 — 비타민 축", qty: over8 ? "4정" : "2정",
+    desc:"비타민 A·B군·C·D·E에 엽산·칼슘·아연·철까지 · 씹어 먹는 츄어블 · 일반의약품 · "
+       + (over8 ? "만 8세 이상 하루 4정 · 월 25,000원" : "만 3~7세 하루 2정 · 월 12,500원")};
+}
+/* 만 3세 미만 — 티라노는 만 36개월부터 복용하는 츄어블이라 젤리형 이뮨츄로 대체 */
 const IMMUNE = {ic:"🍬", name:"이뮨츄 — 비타민 축", qty:"1젤리",
   desc:"만 3세 미만은 씹기 쉬운 젤리형으로 · 비타민 A·D·E·K, B군, 아연 8.5mg · 30젤리 10,100원 · 11/2(월) 공동구매 예정"};
 
@@ -533,19 +535,29 @@ function minekiPlan(cat, months){
         + "미네랄은 한 번에 많이 넣는 것보다 <b>끊기지 않고 매일 채우는 것</b>이 더 중요합니다. 1박스(30포)가 그대로 한 달분입니다."};
 }
 
-/* 드럭해커 조합 비용 (키즈데이 19,000원/30정 + 미네키UP 27,500원/30포 기준) */
-function dhCost(mode, under3){
+/* 드럭해커 조합 비용 (티라노 2정 월 12,500원 · 4정 월 25,000원 + 미네키UP 27,500원/30포 기준) */
+function dhCost(mode, under3, over8){
   if(under3) return {short:"하루 1,253원", monthly:"월 37,600원"};   /* 이뮨츄 337원 + 미네키UP 1포 917원 */
-  if(mode === "two")  return {short:"하루 2,467원", monthly:"월 74,000원"};
-  if(mode === "step") return {short:"하루 1,550~2,467원", monthly:"첫 달 74,000원 · 이후 월 46,500원"};
-  return {short:"하루 1,550원", monthly:"월 46,500원"};
+  if(over8){
+    if(mode === "two")  return {short:"하루 2,667원", monthly:"월 80,000원"};
+    if(mode === "step") return {short:"하루 1,750~2,667원", monthly:"첫 달 80,000원 · 이후 월 52,500원"};
+    return {short:"하루 1,750원", monthly:"월 52,500원"};
+  }
+  if(mode === "two")  return {short:"하루 2,250원", monthly:"월 67,500원"};
+  if(mode === "step") return {short:"하루 1,333~2,250원", monthly:"첫 달 67,500원 · 이후 월 40,000원"};
+  return {short:"하루 1,333원", monthly:"월 40,000원"};
 }
-/* 아연·셀렌 하루 총량 (키즈데이 아연 2.55mg + 미네키UP 1포당 아연 1.5mg·셀렌 25㎍, 셀렌은 미네키UP에만 있음) */
-function znText(mode, under3){
+/* 아연·셀렌 하루 총량 (티라노 2정 아연 4mg · 4정 8mg + 미네키UP 1포당 아연 1.5mg·셀렌 25㎍, 셀렌은 미네키UP에만 있음) */
+function znText(mode, under3, over8){
   if(under3) return "아연 10mg · 셀렌 41.5㎍";   /* 이뮨츄 8.5mg·16.5㎍ + 미네키UP 1포 */
-  if(mode === "two")  return "아연 5.55mg · 셀렌 50㎍";
-  if(mode === "step") return "첫 달 아연 5.55mg · 셀렌 50㎍, 이후 아연 4.05mg · 셀렌 25㎍";
-  return "아연 4.05mg · 셀렌 25㎍";
+  if(over8){
+    if(mode === "two")  return "아연 11mg · 셀렌 50㎍";
+    if(mode === "step") return "첫 달 아연 11mg · 셀렌 50㎍, 이후 아연 9.5mg · 셀렌 25㎍";
+    return "아연 9.5mg · 셀렌 25㎍";
+  }
+  if(mode === "two")  return "아연 7mg · 셀렌 50㎍";
+  if(mode === "step") return "첫 달 아연 7mg · 셀렌 50㎍, 이후 아연 5.5mg · 셀렌 25㎍";
+  return "아연 5.5mg · 셀렌 25㎍";
 }
 
 /* 약국 프리미엄 대안 조합 — 구간별 (under6: 만 6세 미만은 2포 제품을 1포 기준으로 환산) */
@@ -633,7 +645,7 @@ const SUP_DEFAULT = {
 "정상":
 `📌 식사 상태에 따라 갈립니다
 · 편식이 심하다 → 비타민 축 + 미네랄 축 둘 다
-· 채소·과일·생선이 불안정하다 → 키즈데이 우선
+· 채소·과일·생선이 불안정하다 → 티라노 우선
 · 우유·콩·견과·통곡물이 적다 → 미네키UP 우선
 · 식사로 충분하다 → 영양제를 쌓기보다 식사·수면·활동 유지
 
@@ -651,7 +663,7 @@ const SUP_DEFAULT = {
 
 "비만":
 `📌 한 제품부터 시작합니다
-· 채소·과일·생선이 적다 → 키즈데이
+· 채소·과일·생선이 적다 → 티라노
 · 유제품·콩·견과가 적다 → 미네키UP
 
 두 영역 공백이 모두 뚜렷하고 표시 연령을 충족하며 중복 제품이 없을 때만, 의사·약사 확인 후 조합하세요.
@@ -805,7 +817,6 @@ function fmtDate(str){
   const bm=document.getElementById('buyMineki');
   if(MINEKI_OPEN){ bm.href = LINKS.buyMineki; }
   else { bm.removeAttribute('href'); bm.classList.add('off'); bm.setAttribute('aria-disabled','true'); }
-  document.getElementById('buyKidsday').href = LINKS.buyKidsday || LINKS.buy;
   const pn=document.getElementById('promoNote');
   if(PROMO){ pn.textContent=PROMO; } else { pn.style.display='none'; }
 
@@ -914,14 +925,15 @@ document.getElementById('calcBtn').onclick=function(){
   /* ① 드럭해커 추천 — 나이 + 체중 구간에 따라 미네키UP 포수·비용이 바뀝니다 */
   const plan = minekiPlan(cat, months);
   const under3 = months < AGE3;
-  const vit    = under3 ? IMMUNE : KIDSDAY;
-  const dh   = dhCost(plan.mode, under3);
+  const over8  = months >= AGE8;
+  const vit    = under3 ? IMMUNE : tyrano(over8);
+  const dh   = dhCost(plan.mode, under3, over8);
   const mineki = {ic:"🧪", name:"미네키UP — 미네랄 축", qty:plan.qty, desc:plan.desc, note:plan.note};
   document.getElementById('dhPills').innerHTML = [vit, mineki].map(pillHTML).join('');
   document.getElementById('dhCostName').textContent = info.costName;
   document.getElementById('dhCostVal').textContent  = dh.short;
   document.getElementById('dhCostNote').textContent =
-    dh.monthly + (under3 ? ' · 이뮨츄 30젤리 10,100원(하루 337원)' : ' · 키즈데이 30정 19,000원(공구가 · 하루 633원)')
+    dh.monthly + (under3 ? ' · 이뮨츄 30젤리 10,100원(하루 337원)' : (over8 ? ' · 티라노 하루 4정 월 25,000원(하루 833원)' : ' · 티라노 하루 2정 월 12,500원(하루 417원)'))
     + ' + 미네키UP 30포 27,500원 기준. '
     + '가격은 판매처·시기에 따라 달라집니다.';
 
@@ -933,15 +945,17 @@ document.getElementById('calcBtn').onclick=function(){
       +'이 연령은 아연·비타민A 상한섭취량이 낮아(만 1~2세 아연 상한 6mg), 제품과 섭취량을 아이에 맞게 정해야 합니다. '
       +'위 조합은 참고용이며, 이뮨츄는 라벨상 <b>만 2세 이상</b> 제품입니다. '
       +'<a href="'+LINKS.kakao+'" target="_blank" rel="noopener"><b><u>드럭해커 카톡 상담</u></b></a>으로 아이 나이·체중·먹고 있는 영양제를 알려주시면 약사가 직접 확인해 드립니다.</span>'
-    : '<span>⚠️</span><span>두 제품을 함께 먹였을 때 하루 총량은 <b>'+znText(plan.mode)+'</b>입니다. 키즈데이의 아연이 낮게 설계되어 합쳐도 낮은 편이고, 셀렌은 미네키UP에만 있습니다. '
-    +'다만 다른 종합비타민·아연·셀렌 제품을 이미 먹고 있다면 <b>하나만</b> 고르세요. '
+    : '<span>⚠️</span><span>두 제품을 함께 먹였을 때 하루 총량은 <b>'+znText(plan.mode, false, over8)+'</b>입니다. 셀렌은 미네키UP에만 있습니다. '
+    +'티라노에는 <b>철분('+(over8 ? '4정 7.04mg' : '2정 3.52mg')+')</b>이 들어 있어 철분제와 겹치면 과량 섭취 위험이 있습니다. '
+    +'다른 종합비타민·아연·셀렌·철분 제품을 이미 먹고 있다면 <b>하나만</b> 고르세요. '
     +'어린 연령일수록 상한섭취량이 낮습니다.</span>';
 
-  const bv=document.getElementById('buyKidsday');
-  const bvOff = under3 && !IMMUNE_OPEN;
-  bv.textContent = under3 ? (IMMUNE_OPEN ? '🍬 이뮨츄 구매' : '🍬 이뮨츄 11/2(월) 공구 예정') : '🍎 키즈데이 구매';
+  const bv=document.getElementById('buyVit');
+  /* 티라노는 일반의약품이라 구매 링크 없이 약국 구입 안내만 표시 */
+  const bvOff = !under3 || !IMMUNE_OPEN;
+  bv.textContent = under3 ? (IMMUNE_OPEN ? '🍬 이뮨츄 구매' : '🍬 이뮨츄 11/2(월) 공구 예정') : '🦖 티라노 약국 구입';
   if(bvOff){ bv.removeAttribute('href'); bv.setAttribute('aria-disabled','true'); }
-  else { bv.href = under3 ? LINKS.buyImmune : (LINKS.buyKidsday || LINKS.buy); bv.removeAttribute('aria-disabled'); }
+  else { bv.href = LINKS.buyImmune; bv.removeAttribute('aria-disabled'); }
   bv.classList.toggle('off', bvOff);
   const pn=document.getElementById('promoNote');
   if(PROMO){ pn.textContent = under3 ? PROMO_U3 : PROMO; }
@@ -964,7 +978,7 @@ document.getElementById('calcBtn').onclick=function(){
   document.getElementById('phCmpVal').textContent = dh.short;
   document.querySelector('#panelPH .costnote').textContent =
     phCost.monthly + ' 기준. 약국 제품이라서 더 우수하다는 뜻은 아닙니다. '
-    + (under3 ? '이뮨츄' : '키즈데이') + '·미네키UP을 제외하고 약국 판매 제품만으로 구성해야 할 때의 대안입니다. '
+    + (under3 ? '이뮨츄·미네키UP을 제외하고' : '미네키UP 없이') + ' 약국 판매 제품만으로 구성해야 할 때의 대안입니다. '
     + '가격은 약국·판매처·시기에 따라 달라집니다.';
 
   /* 탭은 항상 드럭해커부터 */
@@ -975,7 +989,8 @@ document.getElementById('calcBtn').onclick=function(){
   document.getElementById('tabPhSub').textContent = phCost.short;
 
   let supText=(store.sup[cat]!=null?store.sup[cat]:SUP_DEFAULT[cat]).trim();
-  if(under3) supText = supText.split('키즈데이').join('이뮨츄');
+  supText = supText.split('키즈데이').join('티라노');
+  if(under3) supText = supText.split('티라노').join('이뮨츄');
   document.getElementById('recoBody').textContent=supText;
 
   const res=document.getElementById('result');
